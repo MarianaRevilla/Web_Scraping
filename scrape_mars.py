@@ -1,4 +1,5 @@
 # import dependencies 
+import pymongo
 from bs4 import BeautifulSoup
 import pandas as pd
 from splinter import Browser
@@ -14,7 +15,7 @@ def init_browser():
 #scrape function 
 def scrape():
     browser = init_browser()
-    mars_dict = {}
+    mars_data = {}
     
     # NASA News Website Scraping
     url = "https://mars.nasa.gov/news/"
@@ -27,6 +28,8 @@ def scrape():
     print("Title:",title)
     print("-------")
     print("Paragraph:",paragraph)
+    mars_data["news_title"] = title
+    mars_data["news_p"] = paragraph
     
     # JPL Featured Mars Image 
     image_url = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
@@ -37,6 +40,7 @@ def scrape():
     src = image.get("src")
     featured_image_url = image_url + src
     print(featured_image_url)
+    mars_data["featured_image_url"] = featured_image_url  
 
     # Scrape Mars Twitter Account for latest weather report
     weather_url = "https://twitter.com/marswxreport"
@@ -53,6 +57,7 @@ def scrape():
         except:
             pass
     print(top_tweet)
+    mars_data["twitter_weather"] = top_tweet
 
     # Scrape Mars Facts and convert them to a table 
     facts_url = "https://space-facts.com/mars/"
@@ -63,6 +68,7 @@ def scrape():
     facts_df.head(10)
     html_facts = facts_df.to_html()
     print(html_facts)
+    mars_data["mars_table"] = html_facts
     
     # Scrape Mars' hemispheres images and URLs
     hemisphere_url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
@@ -83,5 +89,6 @@ def scrape():
         hemisphere_list.append(dictionary)
         browser.back()
     print(hemisphere_list)
-
-    return(mars_dict)
+    mars_data['hemispheres'] = hemisphere_list
+    
+    return(mars_data)
